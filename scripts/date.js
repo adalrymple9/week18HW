@@ -1,6 +1,3 @@
-// makeDate script
-// ===============
-
 // This function will make a formatted date for our scraped data
 var makeDate = function() {
   // Save the current date to d
