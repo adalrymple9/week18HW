@@ -1,53 +1,38 @@
-// Require our dependencies
 var express = require("express");
-var mongoose = require("mongoose");
-var expressHandlebars = require("express-handlebars");
 var bodyParser = require("body-parser");
+var mongoose = require("mongoose");
+var request = require("request");
+var cheerio = require("cheerio");
+var path = require("path")
+mongoose.Promise = Promise;
 
-// Set up our port
 var PORT = process.env.PORT || 3000;
-
-// Instantiate our Express App
 var app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
 
-// Set up an Express Router
-var router = express.Router();
+var db = process.env.MONGODB_URI || "mongodb://localhost/mongoHW";
 
-// Require our routes file pass our router object
-require("./config/routes")(router);
-
-// Designate our public folder as a static directory
-app.use(express.static(__dirname + "/public"));
-
-// Connect Handlebars to our Express app
-app.engine("handlebars", expressHandlebars({
-  defaultLayout: "main"
-}));
-app.set("view engine", "handlebars");
-
-// Use bodyParser in our app
-app.use(bodyParser.urlencoded({
-  extended: false
-}));
-
-// Have every request go through our router middleware
-app.use(router);
-
-var db = process.env.MONGODB_URI || "mongodb://localhost/week18HW";
-
-// Connect mongoose to our database
+// Connect
 mongoose.connect(db, function(error) {
-  // Log any errors connecting with mongoose
-  if (error) {
-    console.log(error);
-  }
-  // Or log a success message
-  else {
-    console.log("mongoose connection is successful");
-  }
+    if (error) {
+        console.log(error);
+    } else {
+        console.log();
+    }
 });
 
-// Listen on the port
+app.use(bodyParser.urlencoded({ extended: false }));
+//Handlebars
+const exphbs = require("express-handlebars");
+app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
+
+app.use(express.static(__dirname + "/public"));
+
+const routes = require("./routes/routs.js");
+
+app.use('/', routes);
+
 app.listen(PORT, function() {
-  console.log("Listening on port:" + PORT);
+    console.log("App listening on PORT " + PORT);
 });
